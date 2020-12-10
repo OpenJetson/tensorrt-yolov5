@@ -43,27 +43,8 @@ mkdir build
 cd build
 cmake ..
 make
-sudo ./yolov5 -s             // serialize model to plan file i.e. 'yolov5s.engine'
-sudo ./yolov5 -d  ../samples // deserialize plan file and run inference, the images in samples will be processed.
+sudo ./yolov5 -s         // serialize model to plan file i.e. 'yolov5s.engine'
+sudo ./yolov5 -v         // deserialize plan file and run inference with camera or video.
 
-3. check the images generated, as follows. _zidane.jpg and _bus.jpg
-
-4. optional, load and run the tensorrt model in python
-
-// install python-tensorrt, pycuda, etc.
-// ensure the yolov5s.engine and libmyplugins.so have been built
-python yolov5_trt.py
 ```
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/15235574/78247927-4d9fac00-751e-11ea-8b1b-704a0aeb3fcf.jpg">
-</p>
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/15235574/78247970-60b27c00-751e-11ea-88df-41473fed4823.jpg">
-</p>
-
-## More Information
-
-See the readme in [home page.](https://github.com/wang-xinyu/tensorrtx)
 
