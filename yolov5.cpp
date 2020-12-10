@@ -483,7 +483,7 @@ int main(int argc, char** argv) {
     cudaStream_t stream;
     CHECK(cudaStreamCreate(&stream));
 
-    cv::VideoCapture capture(4);
+    cv::VideoCapture capture(0);
     //cv::VideoCapture capture("../overpass.mp4");
     //int fourcc = cv::VideoWriter::fourcc('M','J','P','G');
     //capture.set(cv::CAP_PROP_FOURCC, fourcc);
@@ -526,7 +526,8 @@ int main(int argc, char** argv) {
         auto start = std::chrono::system_clock::now();
         doInference(*context, stream, buffers, data, prob, BATCH_SIZE);
         auto end = std::chrono::system_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+	int fps = 1000.0/std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        //std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
         std::vector<std::vector<Yolo::Detection>> batch_res(fcount);
         for (int b = 0; b < fcount; b++) {
             auto& res = batch_res[b];
@@ -539,7 +540,9 @@ int main(int argc, char** argv) {
                 cv::Rect r = get_rect(frame, res[j].bbox);
                 cv::rectangle(frame, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
 		std::string label = coco_classes[(int)res[j].class_id];
-		cv::putText(frame, label, cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 2);
+		cv::putText(frame, label, cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 1.2);
+		std::string jetson_fps = "Jetson Nano FPS: " + std::to_string(fps);
+		cv::putText(frame, jetson_fps, cv::Point(11,80), cv::FONT_HERSHEY_PLAIN, 3, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
             }
         }
         
