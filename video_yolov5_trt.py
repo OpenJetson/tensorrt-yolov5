@@ -109,7 +109,6 @@ class YoLov5TRT(object):
         self.bindings = bindings
 
     def infer(self, image2process, video=False):
-        print('INFER: image to process is',np.shape(image2process), video)
         threading.Thread.__init__(self)
         # Make self the active context, pushing it on top of the context stack.
         self.cfx.push()
@@ -123,11 +122,9 @@ class YoLov5TRT(object):
         cuda_outputs = self.cuda_outputs
         bindings = self.bindings
         # Do image preprocess
-        print('do preprocessing')
         input_image, image_raw, origin_h, origin_w = self.preprocess_image(
             image2process, video
         )
-        print('finished preprocessing')
         # Copy input image to host buffer
         np.copyto(host_inputs[0], input_image.ravel())
         # Transfer input data  to the GPU.
@@ -156,14 +153,14 @@ class YoLov5TRT(object):
                     categories[int(result_classid[i])], result_scores[i]
                 ),
             )
-        parent, filename = os.path.split(input_image_path)
-        save_name = os.path.join(parent, "output/output_" + filename)
-        print(save_name)
-        # 　Save image
+
         if not video:
+            
+            parent, filename = os.path.split(input_image_path)
+            save_name = os.path.join(parent, "output/output_" + filename)
+            # 　Save image
             cv2.imwrite(save_name, image_raw)
         else:
-            print('show the image from the video', np.shape(image_raw))
             cv2.imshow('Frame',image_raw)
             cv2.waitKey(1)
 
@@ -171,7 +168,7 @@ class YoLov5TRT(object):
         # Remove any context from the top of the context stack, deactivating it.
         self.cfx.pop()
 
-    def preprocess_image(self, image2process, video):
+    def preprocess_image(self, image_raw, video):
         """
         description: Read an image from image path, convert it to RGB,
                      resize and pad it to target size, normalize to [0,1],
@@ -184,12 +181,11 @@ class YoLov5TRT(object):
             h: original height
             w: original width
         """
-        print('PREPROCESS: image to process is',np.shape(image2process), video)
+        # print('PREPROCESS: image to process is',np.shape(image2process), video)
         if not video:
-            image_raw = image2process #for now it can work, later avoid unnecesary copy
             print('inference item is an image')
         else:
-            image_raw = image2process
+            
             print('inference item is a video')
         h, w, c = image_raw.shape
         image = cv2.cvtColor(image_raw, cv2.COLOR_BGR2RGB)
@@ -330,7 +326,7 @@ if __name__ == "__main__":
         input_path = "test/" + input_image_path
         if not input_path.endswith('.mp4'):
             input = cv2.imread(input_path)
-            print('input print is',np.shape(input))
+            # print('input print is',np.shape(input))
             thread1 = myThread(yolov5_wrapper.infer, [input])
             # thread1.start()
             # thread1.join()
@@ -347,6 +343,7 @@ if __name__ == "__main__":
                 thread1 = myThread(yolov5_wrapper.infer, [frame1, True])
             while capture.isOpened():
                 # print('capture is opened')
+                tic = time.perf_counter()
                 ret, frame = capture.read()
                 if ret:
                     # print('passing image to thread to do inference',ret)
@@ -358,6 +355,9 @@ if __name__ == "__main__":
                     print('frame not passed to thread')
                     yolov5_wrapper.destroy()
                     exit()
+                tac = time.perf_counter()-tic
+                fps = 1/tac
+                print(fps)
 
         thread1.start()
         thread1.join()
