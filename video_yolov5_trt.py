@@ -123,7 +123,7 @@ class YoLov5TRT(object):
         bindings = self.bindings
         # Do image preprocess
         input_image, image_raw, origin_h, origin_w = self.preprocess_image(
-            image2process, video
+            image2process
         )
         # Copy input image to host buffer
         np.copyto(host_inputs[0], input_image.ravel())
@@ -168,7 +168,7 @@ class YoLov5TRT(object):
         # Remove any context from the top of the context stack, deactivating it.
         self.cfx.pop()
 
-    def preprocess_image(self, image_raw, video):
+    def preprocess_image(self, image_raw):
         """
         description: Read an image from image path, convert it to RGB,
                      resize and pad it to target size, normalize to [0,1],
@@ -182,11 +182,6 @@ class YoLov5TRT(object):
             w: original width
         """
         # print('PREPROCESS: image to process is',np.shape(image2process), video)
-        if not video:
-            print('inference item is an image')
-        else:
-            
-            print('inference item is a video')
         h, w, c = image_raw.shape
         image = cv2.cvtColor(image_raw, cv2.COLOR_BGR2RGB)
         # Calculate widht and height and paddings
@@ -352,7 +347,7 @@ if __name__ == "__main__":
                     yolov5_wrapper.infer(frame, True)
                     # print('image passed to thread')
                 else:
-                    print('frame not passed to thread')
+                    print('frame not passed to thread, destroy engine')
                     yolov5_wrapper.destroy()
                     exit()
                 tac = time.perf_counter()-tic
