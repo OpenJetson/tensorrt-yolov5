@@ -1,0 +1,6 @@
+inference item is an image
+test/output/output_image_1.jpg
+inference item is an image
+test/output/output_image_2.jpg
+is a video
+capture started

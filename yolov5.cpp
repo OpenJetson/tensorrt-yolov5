@@ -4,7 +4,7 @@
 #include "logging.h"
 #include "common.hpp"
 
-#define USE_FP16  // comment out this if want to use FP32
+//#define USE_FP16  // comment out this if want to use FP32
 #define DEVICE 0  // GPU id
 #define NMS_THRESH 0.4
 #define CONF_THRESH 0.5
@@ -483,10 +483,10 @@ int main(int argc, char** argv) {
     cudaStream_t stream;
     CHECK(cudaStreamCreate(&stream));
 
-    cv::VideoCapture capture(0);
-    //cv::VideoCapture capture("../overpass.mp4");
-    //int fourcc = cv::VideoWriter::fourcc('M','J','P','G');
-    //capture.set(cv::CAP_PROP_FOURCC, fourcc);
+    //cv::VideoCapture capture(0);
+    cv::VideoCapture capture("../test/video_2.mp4");
+    int fourcc = cv::VideoWriter::fourcc('M','J','P','G');
+    capture.set(cv::CAP_PROP_FOURCC, fourcc);
     if(!capture.isOpened()){
         std::cout << "Error opening video stream or file" << std::endl;
         return -1;
@@ -541,7 +541,7 @@ int main(int argc, char** argv) {
                 cv::rectangle(frame, r, cv::Scalar(0x27, 0xC1, 0x36), 2);
 		std::string label = coco_classes[(int)res[j].class_id];
 		cv::putText(frame, label, cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 1.2);
-		std::string jetson_fps = "Jetson Nano FPS: " + std::to_string(fps);
+		std::string jetson_fps = "FPS: " + std::to_string(fps);
 		cv::putText(frame, jetson_fps, cv::Point(11,80), cv::FONT_HERSHEY_PLAIN, 3, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
             }
         }

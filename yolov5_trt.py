@@ -154,7 +154,8 @@ class YoLov5TRT(object):
                 ),
             )
         parent, filename = os.path.split(input_image_path)
-        save_name = os.path.join(parent, "output_" + filename)
+        save_name = os.path.join(parent, "output/output_" + filename)
+        print(save_name)
         # 　Save image
         cv2.imwrite(save_name, image_raw)
 
@@ -309,11 +310,11 @@ if __name__ == "__main__":
     yolov5_wrapper = YoLov5TRT(engine_file_path)
 
     # from https://github.com/ultralytics/yolov5/tree/master/inference/images
-    input_image_paths = ["zidane.jpg", "bus.jpg"]
-
+    input_image_paths = ["image_1.jpg", "image_2.jpg"]
     for input_image_path in input_image_paths:
         # create a new thread to do inference
-        thread1 = myThread(yolov5_wrapper.infer, [input_image_path])
+        input = "test/" + input_image_path
+        thread1 = myThread(yolov5_wrapper.infer, [input])
         thread1.start()
         thread1.join()
 
